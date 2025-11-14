@@ -50,4 +50,3 @@ jobs:
           stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_PROJECT }}/${{ env.PULUMI_STACK }}
           work-dir: ./ppinfra
           refresh: true
-          args: --yes
