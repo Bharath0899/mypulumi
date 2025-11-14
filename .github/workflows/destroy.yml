@@ -1,8 +1,6 @@
-name: Pulumi Deploy
+name: Pulumi Destroy
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -10,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  destroy:
     runs-on: ubuntu-latest
 
     env:
@@ -22,25 +20,21 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 1) GitHub → Pulumi Cloud via OIDC
       - name: Authenticate to Pulumi Cloud
         uses: pulumi/auth-actions@v1
         with:
           organization: ${{ env.PULUMI_ORG }}
           requested-token-type: urn:pulumi:token-type:access_token:organization
 
-      # 2) Get AWS credentials from Pulumi ESC
-      # (we’ll create an ESC env named aws/github-env)
       - name: Inject ESC environment
         uses: pulumi/esc-action@v1
         with:
           environment: aws/github-env
 
-      # 3) Run pulumi up in ppinfra
-      - name: Pulumi up
+      - name: Pulumi destroy
         uses: pulumi/actions@v5
         with:
-          command: up
+          command: destroy
           stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_PROJECT }}/${{ env.PULUMI_STACK }}
           work-dir: ./ppinfra
           refresh: true
