@@ -32,14 +32,12 @@ jobs:
         working-directory: ./ppinfra
         run: npm install
 
-      # GitHub → Pulumi Cloud via OIDC
       - name: Authenticate to Pulumi Cloud
         uses: pulumi/auth-actions@v1
         with:
           organization: ${{ env.PULUMI_ORG }}
           requested-token-type: urn:pulumi:token-type:access_token:organization
 
-      # Pulumi → AWS via ESC (aws/github-env)
       - name: Inject ESC environment
         uses: pulumi/esc-action@v1
         with:
