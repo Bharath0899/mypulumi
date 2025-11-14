@@ -17,8 +17,17 @@ jobs:
       PULUMI_STACK: dev
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: ./ppinfra
+        run: npm install
 
       - name: Authenticate to Pulumi Cloud
         uses: pulumi/auth-actions@v1
@@ -38,4 +47,4 @@ jobs:
           stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_PROJECT }}/${{ env.PULUMI_STACK }}
           work-dir: ./ppinfra
           refresh: true
-          up-args: --yes
+          args: --yes

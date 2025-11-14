@@ -2,7 +2,8 @@ name: Pulumi Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -19,24 +20,31 @@ jobs:
       PULUMI_STACK: dev
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1) GitHub → Pulumi Cloud via OIDC
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: ./ppinfra
+        run: npm install
+
+      # GitHub → Pulumi Cloud via OIDC
       - name: Authenticate to Pulumi Cloud
         uses: pulumi/auth-actions@v1
         with:
           organization: ${{ env.PULUMI_ORG }}
           requested-token-type: urn:pulumi:token-type:access_token:organization
 
-      # 2) Get AWS credentials from Pulumi ESC
-      # (we’ll create an ESC env named aws/github-env)
+      # Pulumi → AWS via ESC (aws/github-env)
       - name: Inject ESC environment
         uses: pulumi/esc-action@v1
         with:
           environment: aws/github-env
 
-      # 3) Run pulumi up in ppinfra
       - name: Pulumi up
         uses: pulumi/actions@v5
         with:
@@ -44,4 +52,4 @@ jobs:
           stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_PROJECT }}/${{ env.PULUMI_STACK }}
           work-dir: ./ppinfra
           refresh: true
-          up-args: --yes
+          args: --yes
